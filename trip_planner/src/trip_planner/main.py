@@ -6,7 +6,7 @@ from typing import Dict, List, Any, Tuple, Union
 from pydantic import BaseModel, Field
 import json
 from dotenv import load_dotenv
-
+import datetime
 load_dotenv()
 
 # ✅ Pydantic model for task output
@@ -96,7 +96,7 @@ selector_agent = Agent(
 
 # 📌 Task 1: Search for activities
 task_research = Task(
-    description="Use the search engine to find top tourist activities in {{ city }}.",
+    description="Use the search engine to find top tourist activities in {city}.",
     expected_output="A description of places to visit and estimated costs.",
     agent=research_agent,
 )
@@ -114,7 +114,7 @@ task_parsing = Task(
 # 📌 Task 3: Select activities within budget
 task_selection = Task(
     description="Receive a JSON dictionary with activities and their costs. "
-                "Select the optimal combination of activities whose total cost does not exceed {{ budget }} euros. "
+                "Select the optimal combination of activities whose total cost does not exceed {budget} euros. "
                 "Return a valid JSON with the selected activities and total cost.",
     expected_output="A valid JSON with selected activities and the total cost.",
     agent=selector_agent,
@@ -127,9 +127,9 @@ crew = Crew(
     tasks=[task_research, task_parsing, task_selection],
     process=Process.sequential,
     verbose=True,
-    output_log_file='log_crew.txt'
+    output_log_file=f'log_crew_{datetime.datetime.day}.txt'
 )
 
 # 🚀 Launch the crew with dynamic inputs
-result = crew.kickoff(inputs={"city": "Madrid", "budget": 400})
+result = crew.kickoff(inputs={"city": "Madrid", "budget": 4000})
 print(result)
